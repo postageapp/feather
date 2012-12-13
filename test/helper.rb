@@ -5,7 +5,7 @@ require 'test/unit'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require 'handlebar'
+require 'feather'
 
 class Test::Unit::TestCase
   def assert_exception(exception_class, message = nil)

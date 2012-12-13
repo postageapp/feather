@@ -1,12 +1,12 @@
-require 'helper'
+require_relative './helper'
 
 require 'yaml'
 
-class TestHandlebarSupport < Test::Unit::TestCase
+class TestFeatherSupport < Test::Unit::TestCase
   def test_variable_stack
     test = { :test => [ { :a => 'a', :b => 'b' }, { :c => 'c' } ] }
     
-    variables = Handlebar::Support.variable_stack(test)
+    variables = Feather::Support.variable_stack(test)
     
     assert_equal test, variables
     
@@ -16,25 +16,25 @@ class TestHandlebarSupport < Test::Unit::TestCase
 
     test = { 'test' => [ { 'a' => :a, 'b' => :b }, { 'c' => :c } ] }
     
-    variables = Handlebar::Support.variable_stack(test)
+    variables = Feather::Support.variable_stack(test)
     
     assert_equal :a, variables[:test][0][:a]
     assert_equal :b, variables[:test][0][:b]
     assert_equal :c, variables[:test][1][:c]
 
-    assert_equal 'test',  Handlebar::Support.variable_stack('test', false)
-    assert_equal [ 'test' ],  Handlebar::Support.variable_stack('test')
-    assert_equal [ 'test' ],  Handlebar::Support.variable_stack([ 'test' ], false)
-    assert_equal [ 'test' ],  Handlebar::Support.variable_stack([ 'test' ])
+    assert_equal 'test',  Feather::Support.variable_stack('test', false)
+    assert_equal [ 'test' ],  Feather::Support.variable_stack('test')
+    assert_equal [ 'test' ],  Feather::Support.variable_stack([ 'test' ], false)
+    assert_equal [ 'test' ],  Feather::Support.variable_stack([ 'test' ])
     
-    variables = Handlebar::Support.variable_stack(:head => [ { :tag => 'meta' }, { :tag => 'link' } ])
+    variables = Feather::Support.variable_stack(:head => [ { :tag => 'meta' }, { :tag => 'link' } ])
     
     assert_equal 'meta', variables[:head][0][:tag]
     assert_equal 'link', variables[:head][1][:tag]
     
     test = { 'top' => { 'layer' => 'top', 't' => 'top', 'middle' => { 'layer' => 'middle', 'm' => 'middle', 'bottom' => { 'layer' => 'bottom', 'b' => 'bottom' } } } }
     
-    variables = Handlebar::Support.variable_stack(test)
+    variables = Feather::Support.variable_stack(test)
     
     assert_equal 'top', variables[:top][:t]
     assert_equal 'middle', variables[:top][:middle][:m]

@@ -1,4 +1,4 @@
-class Handlebar::Template
+class Feather::Template
   # == Constants ============================================================
   
   TOKEN_REGEXP = /((?:[^\{]|\{[^\{]|\{\{\{)+)|\{\{\s*([\&\%\$\.\:\*\/\=]|\?\!?)?([^\}]*)\}\}/.freeze
@@ -50,6 +50,8 @@ class Handlebar::Template
       else
         content.to_s
       end
+
+    yield(self) if (block_given?)
   end
 
   def to_proc
@@ -63,7 +65,7 @@ class Handlebar::Template
   end
   
   def render(variables = nil, templates = nil, parents = nil)
-    variables = Handlebar::Support.variable_stack(variables, true)
+    variables = Feather::Support.variable_stack(variables, true)
     
     if (templates)
       # Unless the template options have already been processed, mapping
@@ -75,7 +77,7 @@ class Handlebar::Template
           
           h[k] =
             case (v)
-            when Handlebar::Template, Proc, Array
+            when Feather::Template, Proc, Array
               v
             when TOKEN_TRIGGER
               self.class.new(v, :escape => @escape_method)
@@ -94,7 +96,7 @@ class Handlebar::Template
         _parents = parents.dup
         _parent = _parents.shift
         
-        unless (_parent.is_a?(Handlebar::Template))
+        unless (_parent.is_a?(Feather::Template))
           _parent = self.class.new(_parent, :escape => @escape_method)
         end
         
@@ -105,7 +107,7 @@ class Handlebar::Template
           ),
           _parents.empty? ? nil : _parents
         )
-      when Handlebar::Template, Proc
+      when Feather::Template, Proc
         parents.render(
           variables,
           templates.merge(
@@ -115,7 +117,7 @@ class Handlebar::Template
       when String
         _parent = parents
         
-        unless (_parent.is_a?(Handlebar::Template))
+        unless (_parent.is_a?(Feather::Template))
           _parent = self.class.new(_parent, :escape => @escape_method)
         end
         
@@ -259,7 +261,7 @@ class Handlebar::Template
     end
     
     if (source)
-      source.replace("begin;c=false;h=Handlebar::Support;lambda{|v,t|raise RecursionError if(c);c=true;#{stack_variables}r='';#{source}c=false;r};end")
+      source.replace("begin;c=false;h=Feather::Support;lambda{|v,t|raise RecursionError if(c);c=true;#{stack_variables}r='';#{source}c=false;r};end")
     end
     
     true

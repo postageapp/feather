@@ -1,52 +1,52 @@
-require 'helper'
+require_relative './helper'
 
 require 'yaml'
 
-class TestHandlebarTemplate < Test::Unit::TestCase
+class TestFeatherTemplate < Test::Unit::TestCase
   def test_empty_template
-    template = Handlebar::Template.new('')
+    template = Feather::Template.new('')
     
     assert_equal '', template.render
   end
 
   def test_simple_templates
-    template = Handlebar::Template.new('example')
+    template = Feather::Template.new('example')
     
     assert_equal 'example', template.render
 
-    template = Handlebar::Template.new('{{{example}}}')
+    template = Feather::Template.new('{{{example}}}')
     
     assert_equal '{{example}}', template.render
     
-    template = Handlebar::Template.new('example {{example}} text')
+    template = Feather::Template.new('example {{example}} text')
     
     assert_equal 'example something text', template.render(:example => 'something')
 
-    template = Handlebar::Template.new('example {{  example  }} text')
+    template = Feather::Template.new('example {{  example  }} text')
     
     assert_equal 'example something text', template.render(:example => 'something')
   end
   
   def test_boolean_templates
-    template = Handlebar::Template.new('{{?boolean}}true {{/}}false')
+    template = Feather::Template.new('{{?boolean}}true {{/}}false')
     
     assert_equal 'false', template.render
     assert_equal 'true false', template.render(:boolean => true)
     assert_equal 'false', template.render(:boolean => false)
 
-    template = Handlebar::Template.new('{{?boolean}}true{{/}}{{?!boolean}}false{{/}}')
+    template = Feather::Template.new('{{?boolean}}true{{/}}{{?!boolean}}false{{/}}')
 
     assert_equal 'false', template.render
     assert_equal 'true', template.render(:boolean => true)
     assert_equal 'false', template.render(:boolean => false)
 
-    template = Handlebar::Template.new('{{?boolean}}{{true}}{{/boolean}}{{?!boolean}}{{false}}{{/boolean}}')
+    template = Feather::Template.new('{{?boolean}}{{true}}{{/boolean}}{{?!boolean}}{{false}}{{/boolean}}')
 
     assert_equal '', template.render
     assert_equal 'TRUE', template.render(:boolean => true, :true => 'TRUE')
     assert_equal 'FALSE', template.render(:boolean => false, :false => 'FALSE')
     
-    template = Handlebar::Template.new('{{?boolean}}{{/boolean}}{{?!boolean}}{{/boolean}}')
+    template = Feather::Template.new('{{?boolean}}{{/boolean}}{{?!boolean}}{{/boolean}}')
     
     assert_equal '', template.render
     assert_equal '', template.render(:boolean => true)
@@ -54,7 +54,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
   
   def test_sectioned_templates
-    template = Handlebar::Template.new('<head>{{:head}}<{{tag}}>{{/}}</head>')
+    template = Feather::Template.new('<head>{{:head}}<{{tag}}>{{/}}</head>')
     
     assert_equal '<head><meta></head>', template.render(:head => 'meta')
     assert_equal '<head><meta></head>', template.render('head' => 'meta')
@@ -70,7 +70,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
     assert_equal '<head></head>', template.render(:head => nil)
     assert_equal '<head></head>', template.render(:head => [ ])
 
-    template = Handlebar::Template.new('<div>{{:link}}<a href="{{href}}" alt="{{alt}}">{{/}}</div>')
+    template = Feather::Template.new('<div>{{:link}}<a href="{{href}}" alt="{{alt}}">{{/}}</div>')
     
     assert_equal '<div><a href="meta" alt=""></div>', template.render(:link => 'meta')
     assert_equal '<div><a href="meta" alt="link"></div>', template.render(:link => [ %w[ meta link ] ])
@@ -81,23 +81,23 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
   
   def test_template_with_context
-    template = Handlebar::Template.new('{{example}}', :escape => :html)
+    template = Feather::Template.new('{{example}}', :escape => :html)
     
     assert_equal '&lt;strong&gt;', template.render('<strong>')
 
-    template = Handlebar::Template.new('{{=example}}', :escape => :html)
+    template = Feather::Template.new('{{=example}}', :escape => :html)
     
     assert_equal '<strong>', template.render('<strong>')
   end
 
   def test_recursive_templates
-    template = Handlebar::Template.new('{{*example}}', :escape => :html)
+    template = Feather::Template.new('{{*example}}', :escape => :html)
     
     assert_equal 'child', template.render(nil, { :example => '{{*parent}}', :parent => 'child' }.freeze)
   end
 
   def test_dynamic_variables
-    template = Handlebar::Template.new('{{example}}{{text}}', :escape => :html)
+    template = Feather::Template.new('{{example}}{{text}}', :escape => :html)
     
     generator = Hash.new do |h, k|
       h[k] = "<#{k}>"
@@ -107,7 +107,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
   
   def test_dynamic_templates
-    template = Handlebar::Template.new('<{{*example}}>', :escape => :html)
+    template = Feather::Template.new('<{{*example}}>', :escape => :html)
     
     generator = Hash.new do |h, k|
       h[k] = k.to_s.upcase
@@ -117,23 +117,23 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
 
   def test_missing_templates
-    template = Handlebar::Template.new('{{*example}}', :escape => :html)
+    template = Feather::Template.new('{{*example}}', :escape => :html)
     
     assert_equal '', template.render(nil, { })
   end
 
   def test_recursive_circular_templates
-    template = Handlebar::Template.new('{{*reference}}', :escape => :html)
+    template = Feather::Template.new('{{*reference}}', :escape => :html)
     
-    assert_exception Handlebar::Template::RecursionError do
+    assert_exception Feather::Template::RecursionError do
       template.render(nil, { :reference => '{{*backreference}}', :backreference => '{{*reference}}' }.freeze)
     end
   end
   
   def test_parent_templates
-    parent_template = Handlebar::Template.new('{{a}}[{{*}}]{{b}}'.freeze)
-    child_template = Handlebar::Template.new('{{c}}{{*}}'.freeze)
-    final_template = Handlebar::Template.new('{{a}}'.freeze)
+    parent_template = Feather::Template.new('{{a}}[{{*}}]{{b}}'.freeze)
+    child_template = Feather::Template.new('{{c}}{{*}}'.freeze)
+    final_template = Feather::Template.new('{{a}}'.freeze)
     
     variables = { :a => 'A', :b => 'B', :c => 'C' }
     
@@ -143,7 +143,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
 
   def test_inline_parent_templates
-    template = Handlebar::Template.new('{{a}}')
+    template = Feather::Template.new('{{a}}')
     
     variables = { :a => 'A', :b => 'B', :c => 'C' }
     
@@ -153,7 +153,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
   
   def test_extract_variables
-    template = Handlebar::Template.new('{{a}}{{?b}}{{=c}}{{/b}}{{&d}}{{$e}}{{.f}}{{%g}}{{:h}}{{i}}{{/h}}')
+    template = Feather::Template.new('{{a}}{{?b}}{{=c}}{{/b}}{{&d}}{{$e}}{{.f}}{{%g}}{{:h}}{{i}}{{/h}}')
     
     variables = { }
     sections = { }
@@ -171,7 +171,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
 
   def test_chain_extract_variables
-    template = Handlebar::Template.new('{{a}}{{?b}}{{=c}}{{/b}}{{&d}}{{$e}}{{.f}}{{%g}}{{:h}}{{i}}{{/h}}')
+    template = Feather::Template.new('{{a}}{{?b}}{{=c}}{{/b}}{{&d}}{{$e}}{{.f}}{{%g}}{{:h}}{{i}}{{/h}}')
     
     variables = { :x => true }
     sections = { :y => true }
@@ -189,7 +189,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
 
   def test_variable_tracker
-    tracker = Handlebar::Template::VariableTracker.new
+    tracker = Feather::Template::VariableTracker.new
     
     assert_equal true, tracker.empty?
     assert_equal 0, tracker[:a]
@@ -201,7 +201,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
   
   def test_clone
-    template = Handlebar::Template.new('<p>{{example}}</p>', :escape => :html)
+    template = Feather::Template.new('<p>{{example}}</p>', :escape => :html)
   
     cloned = template.clone
     
@@ -209,7 +209,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
   
   def test_serialization_with_yaml
-    template = Handlebar::Template.new('<p>{{example}}</p>', :escape => :html)
+    template = Feather::Template.new('<p>{{example}}</p>', :escape => :html)
     
     assert_equal '<p>&lt;strong&gt;</p>', template.render('<strong>')
     
@@ -221,7 +221,7 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
 
   def test_serialization_with_marshal
-    template = Handlebar::Template.new('<p>{{example}}</p>', :escape => :html)
+    template = Feather::Template.new('<p>{{example}}</p>', :escape => :html)
     
     assert_equal '<p>&lt;strong&gt;</p>', template.render('<strong>')
     
@@ -233,13 +233,13 @@ class TestHandlebarTemplate < Test::Unit::TestCase
   end
   
   def test_with_broken_input
-    template = Handlebar::Template.new('{{}}')
+    template = Feather::Template.new('{{}}')
     
     assert_equal '', template.render
     assert_equal '', template.render(nil)
     assert_equal '', template.render(nil => nil)
     
-    template = Handlebar::Template.new('{{test}}')
+    template = Feather::Template.new('{{test}}')
     
     assert_equal '', template.render(nil => nil)
   end
