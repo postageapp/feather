@@ -47,6 +47,6 @@ as a reference.
 
 ## Copyright
 
-Copyright (c) 2011-2012 Scott Tadman, The Working Group Inc.
+Copyright (c) 2011-2013 Scott Tadman, The Working Group Inc.
 See LICENSE.txt for further details.
 

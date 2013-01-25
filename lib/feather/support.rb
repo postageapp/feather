@@ -2,6 +2,8 @@ require 'uri'
 require 'cgi'
 
 module Feather::Support
+  # == Module/Mixin Methods =================================================
+
   def uri_escape(object)
     URI.escape(object.to_s, /[^a-z0-9\-\.]/i)
   end

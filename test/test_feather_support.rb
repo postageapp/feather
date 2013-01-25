@@ -13,6 +13,7 @@ class TestFeatherSupport < Test::Unit::TestCase
     assert_equal 'a', variables[:test][0][:a]
     assert_equal 'b', variables[:test][0][:b]
     assert_equal 'c', variables[:test][1][:c]
+    assert_equal nil, variables[:test][1][:d]
 
     test = { 'test' => [ { 'a' => :a, 'b' => :b }, { 'c' => :c } ] }
     

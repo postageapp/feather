@@ -81,6 +81,8 @@ class Feather::Template
               v
             when TOKEN_TRIGGER
               self.class.new(v, :escape => @escape_method)
+            when nil
+              nil
             else
               v.to_s
             end
@@ -206,7 +208,7 @@ class Feather::Template
 
           variables and variables[tag] = true
         when '*'
-          source and source << "_t=t&&t[#{tag.inspect}];r<<(_t.respond_to?(:call)?_t.call(v,t):_t.to_s);"
+          source and source << "_t=t&&(t[#{tag.inspect}]||t[#{tag.to_s.inspect}]);r<<(_t.respond_to?(:call)?_t.call(v,t):_t.to_s);"
           
           templates and templates[tag] = true
         when '/'

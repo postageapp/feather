@@ -4,6 +4,8 @@ module Feather
   autoload(:Support, 'feather/support')
   autoload(:Template, 'feather/template')
 
+  # == Module Methods =======================================================
+
   def self.version
     @version ||= File.readlines(
       File.expand_path('../VERSION', File.dirname(__FILE__))

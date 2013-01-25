@@ -94,6 +94,7 @@ class TestFeatherTemplate < Test::Unit::TestCase
     template = Feather::Template.new('{{*example}}', :escape => :html)
     
     assert_equal 'child', template.render(nil, { :example => '{{*parent}}', :parent => 'child' }.freeze)
+    assert_equal 'child', template.render(nil, { 'example' => '{{*parent}}', 'parent' => 'child' }.freeze)
   end
 
   def test_dynamic_variables
