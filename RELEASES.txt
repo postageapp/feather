@@ -1,0 +1,8 @@
+0.4.0
+ - Made more compatible with the Mustache template library semantics.
+ - Added support for {{#...}} section definitions.
+ - Added support for {{^...}} negative definitions.
+ - Added support for {{!...}} comments.
+0.3.1
+ - Template names can be supplied as either Strings or Symbols.
+ - Variables can be defined with either String or Symbol keys.

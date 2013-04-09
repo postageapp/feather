@@ -79,6 +79,25 @@ class TestFeatherTemplate < Test::Unit::TestCase
     assert_equal '<div></div>', template.render(:link => nil)
     assert_equal '<div></div>', template.render(:link => [ ])
   end
+
+  def test_empty_section
+    template = Feather::Template.new('<head>{{:head}}{{tag}}{{/head}}{{^head}}<title></title>{{/head}}</head>')
+
+    assert_equal '<head><title></title></head>', template.render
+    assert_equal '<head><title></title></head>', template.render(:head => nil)
+    assert_equal '<head><title></title></head>', template.render(:head => '')
+    assert_equal '<head><title></title></head>', template.render(:head => [ ])
+    assert_equal '<head><title></title></head>', template.render(:head => { })
+    assert_equal '<head>0</head>', template.render(:head => 0)
+    assert_equal '<head><test><tags></head>', template.render(:head => %w[ <test> <tags> ])
+  end
+
+  def test_comment
+    template = Feather::Template.new('<test>{{!commment with all kinds of <markup>}}</test>')
+
+    assert_equal '<test></test>', template.render
+    assert_equal '<test></test>', template.render(:comment => 'test')
+  end
   
   def test_template_with_context
     template = Feather::Template.new('{{example}}', :escape => :html)

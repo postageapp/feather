@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "feather"
-  s.version = "0.3.1"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Scott Tadman"]
-  s.date = "2013-01-25"
+  s.date = "2013-04-09"
   s.description = "A simple light-weight text templating system"
   s.email = "github@tadman.ca"
   s.extra_rdoc_files = [
@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
     "Gemfile",
     "LICENSE.txt",
     "README.md",
+    "RELEASES.txt",
     "Rakefile",
     "VERSION",
     "feather.gemspec",
@@ -36,7 +37,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/twg/feather"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.24"
+  s.rubygems_version = "1.8.25"
   s.summary = "Light-weight text tempating system"
 
   if s.respond_to? :specification_version then

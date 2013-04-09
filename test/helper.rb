@@ -1,5 +1,4 @@
 require 'rubygems'
-
 require 'test/unit'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
@@ -14,7 +13,7 @@ class Test::Unit::TestCase
     rescue exception_class
       # Expected
     else
-      flunk message || "Did not raise #{exception_class}"
+      flunk(message || "Did not raise #{exception_class}")
     end
   end
 end

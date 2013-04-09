@@ -1,7 +1,7 @@
 # feather
 
-A simple text template system for generating output for a variety of uses
-including plain-text, HTML, and JavaScript.
+A simple text template system inspired by Mustache for generating output for a
+variety of uses including plain-text, HTML, and JavaScript.
 
 ## Examples
 

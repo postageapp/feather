@@ -1,7 +1,7 @@
 class Feather::Template
   # == Constants ============================================================
   
-  TOKEN_REGEXP = /((?:[^\{]|\{[^\{]|\{\{\{)+)|\{\{\s*([\&\%\$\.\:\*\/\=]|\?\!?)?([^\}]*)\}\}/.freeze
+  TOKEN_REGEXP = /((?:[^\{]|\{[^\{]|\{\{\{)+)|\{\{\s*([\&\%\$\.\:\#\^\*\/\=\!]|\?\!?)?([^\}]*)\}\}/.freeze
   TOKEN_TRIGGER = /\{\{/.freeze
     
   TO_YAML_PROPERTIES = %w[ @content @escape_method ].freeze
@@ -29,6 +29,9 @@ class Feather::Template
   
   # == Instance Methods =====================================================
   
+  # Creates a new template with the supplied contens. Options may be specified:
+  # * :html - Automatically escape fields for HTML
+  # * :text - Default mode, render all fields literally
   def initialize(content, options = nil)
     if (options)
       if (source = options[:escape])
@@ -54,6 +57,7 @@ class Feather::Template
     yield(self) if (block_given?)
   end
 
+  # Returns a function that can be used to evaluate the template.
   def to_proc
     @_proc ||= begin
       source = ''
@@ -64,6 +68,10 @@ class Feather::Template
     end
   end
   
+  # Render the template with the given variables, templates, and parent chain.
+  # The variables are specified in a Hash, Array, or object that supports
+  # [](key). templates must be a Hash or [](key) accessible object. The parents
+  # chain is defined as an array.
   def render(variables = nil, templates = nil, parents = nil)
     variables = Feather::Support.variable_stack(variables, true)
     
@@ -138,6 +146,12 @@ class Feather::Template
   end
   alias_method :call, :render
 
+  # Compiles a template and manipulates the options strucutre passed in. Keys
+  # supported are:
+  # * :escape_method - Defines the default escape method for this template.
+  # * :templates - Hash to capture the templates referenced in this template.
+  # * :variables - Hash to capture the variables referenced in this template.
+  # * :source - String to capture the Ruby equivalent of this template.
   def compile(options)
     escape_method = options[:escape_method]
     sections = options[:sections]
@@ -165,7 +179,6 @@ class Feather::Template
           source and source << "v&&r<<h.html_escape(v[#{tag.inspect}].to_s);"
           
           variables and variables[tag] = true
-
         when '%'
           # URI escaped
           index = stack[-1][2][tag.inspect]
@@ -187,8 +200,8 @@ class Feather::Template
           source and source << "v&&r<<h.css_escape(v.is_a?(Array)?v[#{index}]:v[#{tag.inspect}]);"
 
           variables and variables[tag] = true
-        when ':'
-          # Defines start of a :section
+        when ':', '#'
+          # Defines start of a :section or #section
           index = stack[-1][2][tag.inspect]
 
           stack_variables ||= 's=[];'
@@ -198,6 +211,16 @@ class Feather::Template
           source and source << "h.iterate(v){|v|;v=h.cast_as_vars(v, s);"
           
           sections and sections[tag] = true
+        when '^'
+          # Displays if referenced variable is undefined or empty
+          index = stack[-1][2][tag.inspect]
+
+          stack_variables ||= 's=[];'
+          stack << [ :empty_section, tag, stack[-1][2] ]
+
+          source and source << "t=v.is_a?(Array)?v[#{index}]:(v.is_a?(Hash)&&v[#{tag.inspect}]);if(!t||t.respond_to?(:empty?)&&t.empty?);"
+          
+          variables and variables[tag] = true
         when '?', '?!'
           # Defines start of a ?conditional
 
@@ -222,6 +245,8 @@ class Feather::Template
             end
             
             source and source << "};v=s.pop;end;"
+          when :empty_section
+            source and source << "end;"
           when :conditional
             source and source << "end;"
           when :base
@@ -269,10 +294,12 @@ class Feather::Template
     true
   end
   
+  # For compatibility with YAML.dump
   def to_yaml_properties
     TO_YAML_PROPERTIES
   end
   
+  # For compatibility with the Psych YAML library
   def psych_to_yaml(dump)
     # Avoid serializing the generated proc by moving it to a temporary
     # variable for the duration of this operation.
@@ -285,10 +312,12 @@ class Feather::Template
     dump
   end
     
+  # For compatibility with Marshal.dump
   def marshal_dump
     [ @content, { :escape => @escape_method } ]
   end
   
+  # For compatibility with Marshal.load
   def marshal_load(dump)
     @content, options = dump
     
