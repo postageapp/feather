@@ -6,3 +6,14 @@
 0.3.1
  - Template names can be supplied as either Strings or Symbols.
  - Variables can be defined with either String or Symbol keys.
+0.3.0
+ - Renaming library to Feather.
+0.2.2
+ - Handling nil template arguments and empty template substitutions.
+0.2.1
+ - Adding support for Hash-compatible objects to be passed in, responding to
+   the [] method is sufficient.
+0.2.0
+ - Adding ? and ?! conditional tests.
+0.1.0
+ - Initial thin prototype.
