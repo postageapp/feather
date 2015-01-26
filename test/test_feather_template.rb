@@ -2,7 +2,7 @@ require_relative './helper'
 
 require 'yaml'
 
-class TestFeatherTemplate < Test::Unit::TestCase
+class TestFeatherTemplate < Minitest::Test
   def test_empty_template
     template = Feather::Template.new('')
     
@@ -25,6 +25,13 @@ class TestFeatherTemplate < Test::Unit::TestCase
     template = Feather::Template.new('example {{  example  }} text')
     
     assert_equal 'example something text', template.render(:example => 'something')
+  end
+
+  def test_repeated_rendering
+    template = Feather::Template.new('example')
+    
+    assert_equal 'example', template.render
+    assert_equal 'example', template.render
   end
   
   def test_boolean_templates

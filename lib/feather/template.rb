@@ -176,7 +176,7 @@ class Feather::Template
           # HTML escaped
           index = stack[-1][2][tag.inspect]
 
-          source and source << "v&&r<<h.html_escape(v[#{tag.inspect}].to_s);"
+          source and source << "v&&r<<h.html_escape((v.is_a?(Array)?v[#{index}]:v[#{tag.inspect}]).to_s);"
           
           variables and variables[tag] = true
         when '%'

@@ -1,12 +1,12 @@
 require 'rubygems'
-require 'test/unit'
+require 'minitest/autorun'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'feather'
 
-class Test::Unit::TestCase
+class Minitest::Test
   def assert_exception(exception_class, message = nil)
     begin
       yield

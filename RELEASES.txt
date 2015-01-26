@@ -1,3 +1,5 @@
+0.4.1
+ - Minor bugfixes with HTML-escaped content being specified with array values.
 0.4.0
  - Made more compatible with the Mustache template library semantics.
  - Added support for {{#...}} section definitions.

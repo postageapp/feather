@@ -1,6 +1,6 @@
 require_relative './helper'
 
-class TestFeather < Test::Unit::TestCase
+class TestFeather < Minitest::Test
   def test_module_loaded
     assert Feather
 
