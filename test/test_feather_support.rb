@@ -2,7 +2,7 @@ require_relative './helper'
 
 require 'yaml'
 
-class TestFeatherSupport < Minitest::Test
+class TestFeatherSupport < MiniTest::Test
   def test_variable_stack
     test = { :test => [ { :a => 'a', :b => 'b' }, { :c => 'c' } ] }
     

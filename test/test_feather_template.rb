@@ -2,7 +2,7 @@ require_relative './helper'
 
 require 'yaml'
 
-class TestFeatherTemplate < Minitest::Test
+class TestFeatherTemplate < MiniTest::Test
   def test_empty_template
     template = Feather::Template.new('')
     
