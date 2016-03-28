@@ -1,3 +1,6 @@
+0.4.2
+ - Updates to run clean with -w warnings turned on.
+ - Removing old YAML encoding stub and using encode_with(coder)
 0.4.1
  - Minor bugfixes with HTML-escaped content being specified with array values.
 0.4.0

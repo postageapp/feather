@@ -4,8 +4,6 @@ class Feather::Template
   TOKEN_REGEXP = /((?:[^\{]|\{[^\{]|\{\{\{)+)|\{\{\s*([\&\%\$\.\:\#\^\*\/\=\!]|\?\!?)?([^\}]*)\}\}/.freeze
   TOKEN_TRIGGER = /\{\{/.freeze
     
-  TO_YAML_PROPERTIES = %w[ @content @escape_method ].freeze
-
   # == Utility Classes ======================================================
   
   class TemplateHash < Hash; end
@@ -33,6 +31,8 @@ class Feather::Template
   # * :html - Automatically escape fields for HTML
   # * :text - Default mode, render all fields literally
   def initialize(content, options = nil)
+    @escape_method = nil
+
     if (options)
       if (source = options[:escape])
         case (source.to_sym)
@@ -62,7 +62,7 @@ class Feather::Template
     @_proc ||= begin
       source = ''
 
-      self.compile(:source => source, :escape_method => @escape_method)
+      self.compile(source: source, escape_method: @escape_method)
 
       eval(source)
     end
@@ -88,7 +88,7 @@ class Feather::Template
             when Feather::Template, Proc, Array
               v
             when TOKEN_TRIGGER
-              self.class.new(v, :escape => @escape_method)
+              self.class.new(v, escape: @escape_method)
             when nil
               nil
             else
@@ -107,7 +107,7 @@ class Feather::Template
         _parent = _parents.shift
         
         unless (_parent.is_a?(Feather::Template))
-          _parent = self.class.new(_parent, :escape => @escape_method)
+          _parent = self.class.new(_parent, escape: @escape_method)
         end
         
         _parent.render(
@@ -208,7 +208,7 @@ class Feather::Template
           stack << [ :section, tag, VariableTracker.new ]
 
           source and source << "if(v);s<<v;v=v.is_a?(Array)?v[#{index}]:(v.is_a?(Hash)&&v[#{tag.inspect}]);"
-          source and source << "h.iterate(v){|v|;v=h.cast_as_vars(v, s);"
+          source and source << "h.iterate(v){|_v|;v=h.cast_as_vars(_v, s);"
           
           sections and sections[tag] = true
         when '^'
@@ -294,9 +294,10 @@ class Feather::Template
     true
   end
   
-  # For compatibility with YAML.dump
-  def to_yaml_properties
-    TO_YAML_PROPERTIES
+  # For compatibility with YAML
+  def encode_with(coder)
+    coder['content'] = @content
+    coder['escape_method'] = @escape_method
   end
   
   # For compatibility with the Psych YAML library
@@ -314,7 +315,7 @@ class Feather::Template
     
   # For compatibility with Marshal.dump
   def marshal_dump
-    [ @content, { :escape => @escape_method } ]
+    [ @content, { escape: @escape_method } ]
   end
   
   # For compatibility with Marshal.load
