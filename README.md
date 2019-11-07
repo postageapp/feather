@@ -49,4 +49,3 @@ as a reference.
 
 Copyright (c) 2011-2019 Scott Tadman, PostageApp Ltd.
 See LICENSE.txt for further details.
-
